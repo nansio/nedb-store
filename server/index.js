@@ -1,5 +1,6 @@
 const express = require('express')
 const DataStore = require('nedb')
+const fetch = require('node-fetch')
 
 const server = express()
 const db = new DataStore({
@@ -55,4 +56,15 @@ server.get('/api', (req, res) => {
     }
     res.json(docs)
   })
+})
+
+server.get('/weather/:latlon', async (request, response) => {
+  const latlon = request.params.latlon.split(',')
+  const lat = latlon[0]
+  const lon = latlon[1]
+  const API_key = '182689fe8ef95caa21eb2c0f1b1236d2'
+  const api_url = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_key}&lang=zh_cn`
+  const weahter_response = await fetch(api_url)
+  const json = await weahter_response.json()
+  response.json(json)
 })
